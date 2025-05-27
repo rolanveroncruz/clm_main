@@ -1,0 +1,1 @@
+{"time":"2025-05-27T17:18:57+08:00","path":"/ping","request_data":"GET /ping HTTP/1.1\r\nHost: localhost:6000\r\nAccept: */*\r\nAccept-Encoding: br, deflate, gzip, x-gzip\r\nUser-Agent: IntelliJ HTTP Client/GoLand 2025.1\r\n\r\n","took":1001,"status_code":200,"time":"2025-05-27T17:18:58+08:00","message":"[200] GET http request for /ping took 1001ms"}
