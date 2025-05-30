@@ -2,3 +2,32 @@
 GET http://localhost:6000/ping
 
 ###
+POST http://localhost:6000/postping HTTP/1.1
+Content-Type: application/json
+
+{ "name":"Rolan", "email": "rolanvc@gmail.com"}
+
+
+###
+POST http://localhost:6000/get_server_cert HTTP/1.1
+Content-Type: application/json
+
+{"server":  "www.amazon.com"}
+
+### Correct user, incorrect password
+POST http://localhost:6000/login HTTP/1.1
+Content-Type: application/json
+
+{"email":  "rolanvc@gmail.com", "password": "PASSWORD"}
+
+### Correct user and password
+POST http://localhost:6000/login HTTP/1.1
+Content-Type: application/json
+
+{"email":  "rolanvc@gmail.com", "password": "<PASSWORD>"}
+
+### Incorrect user
+POST http://localhost:6000/login HTTP/1.1
+Content-Type: application/json
+
+{"email":  "rolanvc@yahoo.com", "password": "<PASSWORD>"}

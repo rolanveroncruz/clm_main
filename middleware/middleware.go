@@ -2,12 +2,15 @@ package middleware
 
 import (
 	"context"
+	"fmt"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/natefinch/lumberjack"
 	"github.com/rs/zerolog"
 	"net/http"
 	"net/http/httptest"
 	"net/http/httputil"
+	"ph.certs.com/clm_main/auth"
 	"time"
 )
 
@@ -49,5 +52,22 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 		ww.WriteHeader(rec.Code)
 		_, _ = rec.Body.WriteTo(ww)
 
+	})
+}
+
+func verifyToken(tokenString string) error {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return auth.SecretKey, nil
+	})
+	if err != nil {
+		return err
+	}
+	if !token.Valid {
+		return fmt.Errorf("invalid token")
+	}
+	return nil
+}
+func JWTMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	})
 }
