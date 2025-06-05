@@ -10,12 +10,16 @@ import (
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
-	auth "ph.certs.com/clm_main/auth/sql"
-	sql2 "ph.certs.com/clm_main/sql"
+	authSQL "ph.certs.com/clm_main/auth/sql"
+	"ph.certs.com/clm_main/sqlite"
 	"time"
 )
 
 var SecretKey = []byte("mySecret-Key")
+
+func init() {
+	sqlite.InitializeDatabase()
+}
 
 /*
 CreateAdminUser creates the first admin user, rolanvc@gmail.com
@@ -38,7 +42,7 @@ func CreateAdminUser() {
 	hashedPassword := string(hash)
 	newUUID := uuid.New()
 	uUUID := newUUID.String()
-	adminUser, err := sql2.QueryCental.CreateUsers(ctx, auth.CreateUsersParams{
+	adminUser, err := sqlite.QueryCental.CreateUsers(ctx, authSQL.CreateUsersParams{
 		Name:     sql.NullString{String: "RolanVC", Valid: true},
 		Email:    sql.NullString{String: "rolanvc@gmail.com", Valid: true},
 		Password: sql.NullString{String: hashedPassword, Valid: true},
@@ -56,7 +60,7 @@ checkIfAdminUserExists() checks if the "rolanvc@gmail.com" user is already in th
 func checkIfAdminUserExists() (bool, error) {
 	var err error
 	ctx := context.Background()
-	rowCount, err := sql2.QueryCental.GetUserCount(ctx)
+	rowCount, err := sqlite.QueryCental.GetUserCount(ctx)
 	if err != nil {
 		fmt.Printf("error: %s\n", err)
 		return false, errors.New(err.Error())
@@ -64,7 +68,7 @@ func checkIfAdminUserExists() (bool, error) {
 	if rowCount == 0 {
 		return false, nil
 	}
-	adminUser, err := sql2.QueryCental.GetUser(ctx, sql.NullString{String: "rolanvc@gmail.com", Valid: true})
+	adminUser, err := sqlite.QueryCental.GetUser(ctx, sql.NullString{String: "rolanvc@gmail.com", Valid: true})
 	if err != nil {
 		fmt.Printf("error: %s\n", err)
 		return false, errors.New(err.Error())
@@ -97,6 +101,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 	type LoginResponse struct {
 		Email string `json:"email"`
+		Name  string `json:"name"`
 		Token string `json:"token"`
 	}
 
@@ -108,7 +113,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 	ctx := context.Background()
 	email := requestData.Email
-	User, err := sql2.QueryCental.GetUser(ctx, sql.NullString{String: email, Valid: true})
+	User, err := sqlite.QueryCental.GetUser(ctx, sql.NullString{String: email, Valid: true})
 	if err != nil {
 		http.Error(w, catchAllErrorString, http.StatusBadRequest)
 		return
@@ -121,6 +126,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	if err == nil {
 		tokenString, err := createToken(email, Scan(User.Name))
 		response := LoginResponse{
+			Name:  User.Name.String,
 			Email: User.Email.String,
 			Token: tokenString,
 		}

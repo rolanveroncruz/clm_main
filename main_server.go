@@ -13,7 +13,6 @@ import (
 	"ph.certs.com/clm_main/auth"
 	"ph.certs.com/clm_main/certs"
 	"ph.certs.com/clm_main/middleware"
-	"ph.certs.com/clm_main/sql"
 	"time"
 )
 
@@ -36,27 +35,21 @@ type Certificate struct {
 	PublicKeySize      int       `json:"public_key_size"`
 }
 
-func init() {
-	sql.InitializeDatabase()
-	auth.CreateAdminUser()
-}
-
 func main() {
-	defer sql.CloseDatabase()
-
 	err := godotenv.Load()
 	if err != nil {
 		panic(err)
 	}
 	portStr := ":" + os.Getenv("PORT")
 
-	mux_router := mux.NewRouter()
-	mux_router.Handle("/ping", middleware.LoggingMiddleware(http.HandlerFunc(ping)))
-	mux_router.Handle("/postping", middleware.LoggingMiddleware(http.HandlerFunc(postPing)))
-	mux_router.Handle("/get_server_cert", middleware.LoggingMiddleware(http.HandlerFunc(getServerCert)))
-	mux_router.Handle("/login", middleware.LoggingMiddleware(http.HandlerFunc(auth.Login)))
+	// TODO: Figure out how to deal with CORS.
+	muxRouter := mux.NewRouter()
+	muxRouter.Handle("/ping", middleware.LoggingMiddleware(http.HandlerFunc(ping)))
+	muxRouter.Handle("/postping", middleware.LoggingMiddleware(http.HandlerFunc(postPing)))
+	muxRouter.Handle("/get_server_cert", middleware.LoggingMiddleware(http.HandlerFunc(getServerCert)))
+	muxRouter.Handle("/api/login", middleware.LoggingMiddleware(middleware.CorsMiddleware(http.HandlerFunc(auth.Login))))
 	println("Listening on port " + portStr + "...")
-	err = http.ListenAndServe(portStr, mux_router)
+	err = http.ListenAndServe(portStr, muxRouter)
 	if err != nil {
 		panic(err)
 	}

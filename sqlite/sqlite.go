@@ -1,4 +1,4 @@
-package sql
+package sqlite
 
 import (
 	"database/sql"
@@ -6,12 +6,17 @@ import (
 	auth "ph.certs.com/clm_main/auth/sql"
 )
 
+func init() {
+	InitializeDatabase()
+	defer CloseDatabase()
+}
+
 var TheDB *sql.DB
 var QueryCental *auth.Queries
 
 func InitializeDatabase() {
 	var err error
-	TheDB, err = sql.Open("sqlite3", "/Volumes/RVC/Projects/certs.com.ph/clm_main/sql/auth")
+	TheDB, err = sql.Open("sqlite3", "/Volumes/RVC/Projects/certs.com.ph/clm_main/sqlite/auth")
 	if err != nil {
 		panic(err)
 	}
