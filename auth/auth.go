@@ -19,6 +19,7 @@ var SecretKey = []byte("mySecret-Key")
 
 func init() {
 	sqlite.InitializeDatabase()
+	CreateAdminUser()
 }
 
 /*
@@ -156,31 +157,4 @@ func createToken(userEmail string, userName string) (string, error) {
 		return "", err
 	}
 	return tokenString, nil
-}
-func GetEmailFromToken(tokenString string) (string, error) {
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		return SecretKey, nil
-	})
-	if err != nil {
-		return "", err
-	}
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		return claims["email"].(string), nil
-	} else {
-		fmt.Println(err)
-		return "", errors.New("invalid token")
-	}
-}
-
-func VerifyToken(tokenString string) error {
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		return SecretKey, nil
-	})
-	if err != nil {
-		return err
-	}
-	if !token.Valid {
-		return fmt.Errorf("invalid token")
-	}
-	return nil
 }
