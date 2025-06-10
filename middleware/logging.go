@@ -4,22 +4,20 @@ import (
 	"context"
 	"fmt"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/natefinch/lumberjack"
 	"github.com/rs/zerolog"
 	"net/http"
 	"net/http/httptest"
 	"net/http/httputil"
-	"ph.certs.com/clm_main/auth"
 	"time"
 )
 
 var lumberjackLogger = &lumberjack.Logger{
-	Filename:   "middleware/log.log", //filename
-	MaxSize:    100,                  // file size in MB before rotation
-	MaxBackups: 10,                   // Max number of files kept before being overwritten
-	MaxAge:     28,                   // Max number of days to keep the files
-	Compress:   true,                 // Whether to compress log files using gzip
+	Filename:   "logs/log.log", //filename
+	MaxSize:    100,            // file size in MB before rotation
+	MaxBackups: 10,             // Max number of files kept before being overwritten
+	MaxAge:     28,             // Max number of days to keep the files
+	Compress:   true,           // Whether to compress log files using gzip
 }
 var logger = zerolog.New(lumberjackLogger).With().Timestamp().Logger()
 
@@ -54,37 +52,5 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 		ww.WriteHeader(rec.Code)
 		_, _ = rec.Body.WriteTo(ww)
 
-	})
-}
-
-// verifyToken validates a JWT token string and returns an error if it's invalid or cannot be parsed.
-func verifyToken(tokenString string) error {
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		return auth.SecretKey, nil
-	})
-	if err != nil {
-		return err
-	}
-	if !token.Valid {
-		return fmt.Errorf("invalid token")
-	}
-	return nil
-}
-func JWTMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	})
-}
-
-// CorsMiddleware is a middleware to handle Preflight calls which usually are related to CORS problems.
-func CorsMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// TODO: Currently, this only allows origins of http://localhost:4200
-		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:4200")
-		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-		w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Authorization")
-		if r.Method == "OPTIONS" {
-			return
-		}
-		next.ServeHTTP(w, r)
 	})
 }

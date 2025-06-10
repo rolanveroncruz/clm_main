@@ -13,3 +13,10 @@ It will support the following:
 ### May 28, 2025 11:34 am
 I can already pull certificates from a public web server.
 Need to store them in the database so the front end can display them. Need to define db schema.
+
+### Jun 6, 2025 10:05am
+I can already perform logging in, and have solved the CORS problem using a preflight middleware.
+Now need to work on querying websites for their certs, storing these in the database, and allowing querying.
+
+### Jun 10, 2025 12:52pm
+
