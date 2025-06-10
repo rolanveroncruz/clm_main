@@ -21,7 +21,7 @@ func main() {
 	muxRouter := mux.NewRouter()
 	muxRouter.Handle("/ping", middleware.LoggingMiddleware(http.HandlerFunc(ping)))
 	muxRouter.Handle("/postping", middleware.LoggingMiddleware(http.HandlerFunc(postPing)))
-	muxRouter.Handle("/api/get_server_cert", middleware.LoggingMiddleware(http.HandlerFunc(certs.GetServerCert)))
+	muxRouter.Handle("/api/get_server_cert", middleware.LoggingMiddleware(middleware.JWTMiddleware(http.HandlerFunc(certs.GetServerCert))))
 	muxRouter.Handle("/api/login", middleware.LoggingMiddleware(middleware.CorsMiddleware(http.HandlerFunc(auth.Login))))
 	println("Listening on port " + portStr + "...")
 	err = http.ListenAndServe(portStr, muxRouter)
