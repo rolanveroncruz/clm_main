@@ -18,7 +18,7 @@ var CertsQueryCental *certs.Queries
 
 func InitializeDatabase() {
 	var err error
-	TheDB, err = sql.Open("sqlite3", "/Volumes/RVC/Projects/certs.com.ph/clm_main/sqlite/auth")
+	TheDB, err = sql.Open("sqlite3", "/Volumes/RVC/Projects/certs.com.ph/clm_main/sqlite/clm_main")
 	if err != nil {
 		panic(err)
 	}

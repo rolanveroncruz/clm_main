@@ -5,5 +5,5 @@ sql:
     schema: "schema.sql"
     gen:
       go:
-        package: "auth"
+        package: "clm_main"
         out: "sql"
