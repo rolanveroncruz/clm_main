@@ -16,7 +16,7 @@ type pkixName struct {
 	Locality           []string `json:"Locality"`
 	Province           []string `json:"Province"`
 }
-type Certificate struct {
+type JSONCertificate struct {
 	SerialNumber       string    `json:"serial_number"`
 	Subject            pkixName  `json:"common_name"`
 	Issuer             pkixName  `json:"issuer"`
@@ -27,8 +27,8 @@ type Certificate struct {
 	PublicKeySize      int       `json:"public_key_size"`
 }
 
-func ConvertX509ToCertificate(from x509.Certificate) Certificate {
-	var to Certificate
+func ConvertX509ToCertificate(from x509.Certificate) JSONCertificate {
+	var to JSONCertificate
 	to.SerialNumber = from.SerialNumber.String()
 	to.Subject.CommonName = from.Subject.CommonName
 	to.Subject.Organization = from.Subject.Organization

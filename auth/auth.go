@@ -42,7 +42,7 @@ func CreateAdminUser() {
 	hashedPassword := string(hash)
 	newUUID := uuid.New()
 	uUUID := newUUID.String()
-	adminUser, err := sqlite.QueryCental.CreateUsers(ctx, authSQL.CreateUsersParams{
+	adminUser, err := sqlite.AuthQueryCental.CreateUsers(ctx, authSQL.CreateUsersParams{
 		Name:     sql.NullString{String: "RolanVC", Valid: true},
 		Email:    sql.NullString{String: "rolanvc@gmail.com", Valid: true},
 		Password: sql.NullString{String: hashedPassword, Valid: true},
@@ -60,7 +60,7 @@ checkIfAdminUserExists() checks if the "rolanvc@gmail.com" user is already in th
 func checkIfAdminUserExists() (bool, error) {
 	var err error
 	ctx := context.Background()
-	rowCount, err := sqlite.QueryCental.GetUserCount(ctx)
+	rowCount, err := sqlite.AuthQueryCental.GetUserCount(ctx)
 	if err != nil {
 		fmt.Printf("error: %s\n", err)
 		return false, errors.New(err.Error())
@@ -68,7 +68,7 @@ func checkIfAdminUserExists() (bool, error) {
 	if rowCount == 0 {
 		return false, nil
 	}
-	adminUser, err := sqlite.QueryCental.GetUser(ctx, sql.NullString{String: "rolanvc@gmail.com", Valid: true})
+	adminUser, err := sqlite.AuthQueryCental.GetUser(ctx, sql.NullString{String: "rolanvc@gmail.com", Valid: true})
 	if err != nil {
 		fmt.Printf("error: %s\n", err)
 		return false, errors.New(err.Error())
@@ -113,7 +113,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 	ctx := context.Background()
 	email := requestData.Email
-	User, err := sqlite.QueryCental.GetUser(ctx, sql.NullString{String: email, Valid: true})
+	User, err := sqlite.AuthQueryCental.GetUser(ctx, sql.NullString{String: email, Valid: true})
 	if err != nil {
 		http.Error(w, catchAllErrorString, http.StatusBadRequest)
 		return
@@ -156,4 +156,31 @@ func createToken(userEmail string, userName string) (string, error) {
 		return "", err
 	}
 	return tokenString, nil
+}
+func GetEmailFromToken(tokenString string) (string, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return SecretKey, nil
+	})
+	if err != nil {
+		return "", err
+	}
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		return claims["email"].(string), nil
+	} else {
+		fmt.Println(err)
+		return "", errors.New("invalid token")
+	}
+}
+
+func VerifyToken(tokenString string) error {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return SecretKey, nil
+	})
+	if err != nil {
+		return err
+	}
+	if !token.Valid {
+		return fmt.Errorf("invalid token")
+	}
+	return nil
 }

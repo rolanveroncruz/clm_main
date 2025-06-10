@@ -8,21 +8,6 @@ import (
 	"database/sql"
 )
 
-type Certificate struct {
-	Pk                      int64
-	UserEmail               interface{}
-	SubjectCommonName       sql.NullString
-	SubjectOrganization     interface{}
-	SubjectOrganizationUnit interface{}
-	SubjectCountry          interface{}
-	SubjectLocality         interface{}
-	SubjectProvince         interface{}
-	IssuerID                sql.NullInt64
-	SerialNumber            sql.NullString
-	NotBefore               sql.NullString
-	NotAfter                sql.NullString
-}
-
 type User struct {
 	Pk       int64
 	Email    sql.NullString

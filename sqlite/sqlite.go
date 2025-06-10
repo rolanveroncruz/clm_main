@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	_ "github.com/mattn/go-sqlite3"
 	auth "ph.certs.com/clm_main/auth/sql"
+	certs "ph.certs.com/clm_main/certs/sql"
 )
 
 func init() {
@@ -12,7 +13,8 @@ func init() {
 }
 
 var TheDB *sql.DB
-var QueryCental *auth.Queries
+var AuthQueryCental *auth.Queries
+var CertsQueryCental *certs.Queries
 
 func InitializeDatabase() {
 	var err error
@@ -20,7 +22,8 @@ func InitializeDatabase() {
 	if err != nil {
 		panic(err)
 	}
-	QueryCental = auth.New(TheDB)
+	AuthQueryCental = auth.New(TheDB)
+	CertsQueryCental = certs.New(TheDB)
 }
 
 func CloseDatabase() {

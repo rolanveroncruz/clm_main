@@ -3,44 +3,69 @@
 package certs
 
 import (
-	"encoding/json"
-	"net/http"
+	"context"
+	"database/sql"
+	certsSQL "ph.certs.com/clm_main/certs/sql"
+	"ph.certs.com/clm_main/sqlite"
 )
 
 // GetServerCert gets the certificate of the requested server, along with the signing chain of the certificate.
-func GetServerCert(w http.ResponseWriter, r *http.Request) {
-	// TODO: extract the JWT fom the header, check the user and store that information with the certs.
-	type RequestData struct {
-		Server string `json:"server"`
-	}
 
-	type Response struct {
-		Certs []*Certificate `json:"certs"`
+func insertIntoDB(certs []*JSONCertificate, userEmail string) error {
+	var err error
+	for _, cert := range certs {
+		err = saveCertToDB(cert, userEmail)
+		if err != nil {
+			continue
+		}
 	}
-	var requestData RequestData
-	err := json.NewDecoder(r.Body).Decode(&requestData)
-	responseCerts := []*Certificate{}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	serverName := requestData.Server
-	allCerts := Discover(serverName)
-
-	for _, cert := range allCerts {
-		certData := ConvertX509ToCertificate(*cert)
-		responseCerts = append(responseCerts, &certData)
+	return err
+}
+func saveCertToDB(cert *JSONCertificate, userEmail string) error {
+	ctx := context.Background()
+	certificateParams := certsSQL.CreateCertificateParams{
+		UserEmail:                 sql.NullString{String: userEmail, Valid: true},
+		SubjectCommonName:         sql.NullString{String: cert.Subject.CommonName, Valid: true},
+		SubjectOrganization:       FromStringArrayToNullString(cert.Subject.Organization),
+		SubjectOrganizationalUnit: FromStringArrayToNullString(cert.Subject.OrganizationalUnit),
+		SubjectCountry:            FromStringArrayToNullString(cert.Subject.Country),
+		SubjectLocality:           FromStringArrayToNullString(cert.Subject.Locality),
+		SubjectProvince:           FromStringArrayToNullString(cert.Subject.Province),
+		IssuerCommonName:          sql.NullString{String: cert.Issuer.CommonName, Valid: true},
+		IssuerOrganization:        FromStringArrayToNullString(cert.Issuer.Organization),
+		IssuerOrganizationalUnit:  FromStringArrayToNullString(cert.Issuer.OrganizationalUnit),
+		IssuerCountry:             FromStringArrayToNullString(cert.Issuer.Country),
+		SerialNumber:              sql.NullString{String: cert.SerialNumber, Valid: true},
+		NotBefore:                 sql.NullString{String: cert.NotBefore.String(), Valid: true},
+		NotAfter:                  sql.NullString{String: cert.NotAfter.String(), Valid: true},
 	}
-
-	// TODO: store all Certificates in responseCerts to DB
-
-	response := Response{
-		Certs: responseCerts,
-	}
-	jsonResponse, err := json.Marshal(response)
+	_, err := sqlite.CertsQueryCental.CreateCertificate(ctx, certificateParams)
 	if err != nil {
-		panic(err)
+		return err
+	} else {
+		return nil
 	}
-	_, err = w.Write(jsonResponse)
+}
+func FromStringArrayToNullString(data []string) sql.NullString {
+	if len(data) == 0 {
+		return sql.NullString{String: "", Valid: false}
+	} else {
+		return sql.NullString{String: data[0], Valid: true}
+	}
+}
+
+func certAlreadyInServer(serverName string, requesterUserEmail string) bool {
+	ctx := context.Background()
+	commonNameAndEmail := certsSQL.GetCertificateFromSubjectCommonNameAndUserEmailParams{
+		SubjectCommonName: sql.NullString{String: serverName, Valid: true},
+		UserEmail:         requesterUserEmail,
+	}
+	_, err := sqlite.CertsQueryCental.GetCertificateFromSubjectCommonNameAndUserEmail(ctx, commonNameAndEmail)
 	if err != nil {
-		return
+		// err could be 'no rows in result set'.
+		return false
+	} else {
+		return true
 	}
+
 }

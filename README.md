@@ -16,7 +16,8 @@ Need to store them in the database so the front end can display them. Need to de
 
 ### Jun 6, 2025 10:05am
 I can already perform logging in, and have solved the CORS problem using a preflight middleware.
-Now need to work on querying websites for their certs, storing these in the database, and allowing querying.
+Now need to work on querying websites for their certs, storing these in the database, and allowing querying the db 
+via http.
 
 ### Jun 10, 2025 12:52pm
 
