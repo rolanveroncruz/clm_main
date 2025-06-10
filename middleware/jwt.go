@@ -22,20 +22,27 @@ func verifyToken(tokenString string) error {
 	return nil
 }
 
-// JWTMiddleware should always check for the presence of the jwt token in the Authorization header
+// JWTMiddleware checks for the validity of the jwt token in the Authorization header
+// extracts the userEmail, and adds it to the request context.
 func JWTMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		tokenString := r.Header.Get("Authorization")
 		tokenString = strings.TrimPrefix(tokenString, "Bearer ")
-		err := verifyToken(tokenString)
+
+		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+			return auth.SecretKey, nil
+		})
 		if err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
-			_, err2 := fmt.Fprintln(w, "invalid token")
-			if err2 != nil {
-				return
-			}
 			return
 		}
-		next.ServeHTTP(w, r)
+		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+			ctx := r.Context()
+			userEmail := claims["email"].(string)
+			ctx = ContextWithUser(ctx, userEmail)
+			req := r.WithContext(ctx)
+			next.ServeHTTP(w, req)
+		}
+
 	})
 }

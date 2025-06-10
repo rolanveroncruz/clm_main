@@ -19,5 +19,8 @@ I can already perform logging in, and have solved the CORS problem using a prefl
 Now need to work on querying websites for their certs, storing these in the database, and allowing querying the db 
 via http.
 
-### Jun 10, 2025 12:52pm
-
+### Jun 10, 2025 8:51pm
+Have already implemented:
+-checking if server for discovery was already previously requested by user.
+-saving discovered certs into DB.
+TODO: handler for querying certs discovered.

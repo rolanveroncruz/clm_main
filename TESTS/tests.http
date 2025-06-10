@@ -39,3 +39,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJvbGFud
 
 {"server":"www.amazon.com"}
 
+### Get Certs
+POST http://localhost:5001/api/get_certs HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJvbGFudmNAZ21haWwuY29tIiwiZXhwIjoxNzQ5Nzk4ODAzLCJuYW1lIjoiUm9sYW5WQyJ9.YYZDOVgSiI1aRa-eXRtWJw9lXUnZFK93LxcMG7aiwDM
+
+{"server":"www.amazon.com"}

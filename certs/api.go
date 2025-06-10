@@ -3,22 +3,24 @@ package certs
 import (
 	"encoding/json"
 	"net/http"
-	"ph.certs.com/clm_main/auth"
-	"strings"
+	"ph.certs.com/clm_main/middleware"
 )
 
-func GetServerCert(w http.ResponseWriter, r *http.Request) {
-	tokenString := r.Header.Get("Authorization")
-	tokenString = strings.TrimPrefix(tokenString, "Bearer ")
-	err := auth.VerifyToken(tokenString)
-
-	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
+func GetCertsFromDB(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	userEmail := middleware.UserFromContext(ctx)
+	if userEmail == nil {
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	userEmail, err1 := auth.GetEmailFromToken(tokenString)
-	if err1 != nil {
-		w.WriteHeader(http.StatusUnauthorized)
+
+}
+
+func GetServerCert(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	userEmail := middleware.UserFromContext(ctx)
+	if userEmail == nil {
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	type RequestData struct {
@@ -44,7 +46,7 @@ func GetServerCert(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	serverName := requestData.Server
 	var response Response
-	alreadyPresent := certAlreadyInServer(serverName, userEmail)
+	alreadyPresent := certAlreadyInServer(serverName, userEmail.(string))
 	if alreadyPresent {
 		response = Response{
 			Certs:   nil,
@@ -58,7 +60,7 @@ func GetServerCert(w http.ResponseWriter, r *http.Request) {
 			responseCerts = append(responseCerts, &certData)
 		}
 
-		err2 := insertIntoDB(responseCerts, userEmail)
+		err2 := insertIntoDB(responseCerts, userEmail.(string))
 		if err2 != nil {
 			return
 		}

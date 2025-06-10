@@ -21,6 +21,7 @@ func insertIntoDB(certs []*JSONCertificate, userEmail string) error {
 	}
 	return err
 }
+
 func saveCertToDB(cert *JSONCertificate, userEmail string) error {
 	ctx := context.Background()
 	certificateParams := certsSQL.CreateCertificateParams{
