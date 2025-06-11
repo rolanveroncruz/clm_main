@@ -10,6 +10,7 @@ import (
 
 type Certificate struct {
 	Pk                        int64
+	SqlTimeStamp              sql.NullTime
 	UserEmail                 interface{}
 	SubjectCommonName         sql.NullString
 	SubjectOrganization       interface{}

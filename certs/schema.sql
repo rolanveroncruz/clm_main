@@ -4,6 +4,7 @@
 
 CREATE TABLE IF NOT EXISTS certificate(
     pk integer primary key,
+    sql_time_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     user_email text null,
     subject_common_name text,
     subject_organization text null,

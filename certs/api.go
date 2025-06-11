@@ -2,15 +2,42 @@ package certs
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+	certsSQL "ph.certs.com/clm_main/certs/sql"
 	"ph.certs.com/clm_main/middleware"
+	"ph.certs.com/clm_main/sqlite"
 )
 
 func GetCertsFromDB(w http.ResponseWriter, r *http.Request) {
+	type Response struct {
+		Certs   []certsSQL.Certificate `json:"certs"`
+		Message string                 `json:"message"`
+	}
+
 	ctx := r.Context()
 	userEmail := middleware.UserFromContext(ctx)
 	if userEmail == nil {
 		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	certs, queryErr := sqlite.CertsQueryCental.GetCertificatesFromUserEmail(ctx, userEmail)
+	if queryErr != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	response := Response{
+		Certs:   certs,
+		Message: "success",
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	jsonResponse, err := json.Marshal(response)
+	if err != nil {
+		fmt.Printf("%s", err)
+	}
+	_, err = w.Write(jsonResponse)
+	if err != nil {
 		return
 	}
 

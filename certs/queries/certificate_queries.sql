@@ -10,6 +10,12 @@ WHERE subject_common_name = ? LIMIT 1;
 SELECT * FROM certificate
 WHERE subject_common_name = ? AND user_email=? LIMIT 1;
 
+-- name: GetCertificatesFromUserEmail :many
+SELECT * FROM certificate
+WHERE user_email=?
+ORDER BY sql_time_stamp;
+
+
 -- name: ListCertificates :many
 SELECT * FROM certificate
 ORDER BY subject_common_name;
