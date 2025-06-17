@@ -83,7 +83,7 @@ func GetServerCert(w http.ResponseWriter, r *http.Request) {
 	} else {
 		allCerts := Discover(serverName)
 		for _, cert := range allCerts {
-			certData := ConvertX509ToCertificate(*cert)
+			certData := ConvertX509ToCertificate(*cert, serverName)
 			responseCerts = append(responseCerts, &certData)
 		}
 

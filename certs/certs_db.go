@@ -39,6 +39,7 @@ func saveCertToDB(cert *JSONCertificate, userEmail string) error {
 		SerialNumber:              sql.NullString{String: cert.SerialNumber, Valid: true},
 		NotBefore:                 sql.NullString{String: cert.NotBefore.String(), Valid: true},
 		NotAfter:                  sql.NullString{String: cert.NotAfter.String(), Valid: true},
+		RequestedServer:           sql.NullString{String: cert.RequestedServer, Valid: true},
 	}
 	_, err := sqlite.CertsQueryCental.CreateCertificate(ctx, certificateParams)
 	if err != nil {

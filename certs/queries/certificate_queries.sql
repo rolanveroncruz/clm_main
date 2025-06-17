@@ -25,10 +25,10 @@ SELECT * FROM certificate
 ORDER BY not_after;
 
 -- name: CreateCertificate :one
-INSERT INTO certificate(
-                        user_email, subject_common_name, subject_organization, subject_organizational_unit, subject_country, subject_locality, subject_province,
-                        issuer_common_name, issuer_organization, issuer_organizational_unit, issuer_country, serial_number, not_before, not_after
-) VALUES ( ?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+INSERT INTO certificate(user_email, subject_common_name, subject_organization, subject_organizational_unit, subject_country, subject_locality,
+                        subject_province, issuer_common_name, issuer_organization, issuer_organizational_unit, issuer_country, serial_number,
+                        not_before, not_after, requested_server)
+VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
 RETURNING *;
 
 -- name: UpdateCertificate :exec

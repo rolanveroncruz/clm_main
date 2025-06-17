@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS certificate(
     serial_number text,
     not_before text,
     not_after text,
+    requested_server text null, -- this is the name of the server requested.
     FOREIGN KEY (user_email) REFERENCES user(email) ON DELETE CASCADE
 );
 

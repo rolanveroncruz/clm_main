@@ -35,15 +35,16 @@ Content-Type: application/json
 
 ### Get Server Cert
 POST http://localhost:5001/api/get_server_cert HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJvbGFudmNAZ21haWwuY29tIiwiZXhwIjoxNzQ5Nzk4ODAzLCJuYW1lIjoiUm9sYW5WQyJ9.YYZDOVgSiI1aRa-eXRtWJw9lXUnZFK93LxcMG7aiwDM
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJvbGFudmNAZ21haWwuY29tIiwiZXhwIjoxNzUwNDMyNTM3LCJuYW1lIjoiUm9sYW5WQyJ9.Noxel_y0e5FTTYO6QugkcbzO14yv_hXN1eexlOEYoSU
+
+{"server":"rolanvc.dev"}
+
+### Get Server Cert
+POST http://localhost:5001/api/get_server_cert HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJvbGFudmNAZ21haWwuY29tIiwiZXhwIjoxNzUwNDMyNTM3LCJuYW1lIjoiUm9sYW5WQyJ9.Noxel_y0e5FTTYO6QugkcbzO14yv_hXN1eexlOEYoSU
 
 {"server":"www.amazon.com"}
 
-### Get Certs
+### Get Certs, might need to login for a fresh/valid Token.
 GET http://localhost:5001/api/get_certs HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJvbGFudmNAZ21haWwuY29tIiwiZXhwIjoxNzQ5Nzk4ODAzLCJuYW1lIjoiUm9sYW5WQyJ9.YYZDOVgSiI1aRa-eXRtWJw9lXUnZFK93LxcMG7aiwDM
-
-
-### Get Certs no Bearer token.
-GET http://localhost:5001/api/get_certs HTTP/1.1
-
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJvbGFudmNAZ21haWwuY29tIiwiZXhwIjoxNzUwMzIwMzg2LCJuYW1lIjoiUm9sYW5WQyJ9._nWRdk3q5zlt0RpMcOyFaFTXRcd-dRTkVg-mbdiLezQ

@@ -22,7 +22,8 @@ func main() {
 	muxRouter.Handle("/ping", middleware.LoggingMiddleware(http.HandlerFunc(ping)))
 	muxRouter.Handle("/postping", middleware.LoggingMiddleware(http.HandlerFunc(postPing)))
 	muxRouter.Handle("/api/get_server_cert", middleware.LoggingMiddleware(middleware.JWTMiddleware(http.HandlerFunc(certs.GetServerCert))))
-	muxRouter.Handle("/api/get_certs", middleware.LoggingMiddleware(middleware.JWTMiddleware(http.HandlerFunc(certs.GetCertsFromDB))))
+	muxRouter.Handle("/api/get_certs", middleware.LoggingMiddleware(middleware.CorsMiddleware(
+		middleware.JWTMiddleware(http.HandlerFunc(certs.GetCertsFromDB)))))
 	muxRouter.Handle("/api/login", middleware.LoggingMiddleware(middleware.CorsMiddleware(http.HandlerFunc(auth.Login))))
 	println("Listening on port " + portStr + "...")
 	err = http.ListenAndServe(portStr, muxRouter)

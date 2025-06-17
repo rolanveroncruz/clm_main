@@ -25,9 +25,10 @@ type JSONCertificate struct {
 	SignatureAlgorithm string    `json:"signature_algorithm"`
 	PublicKeyAlgorithm string    `json:"public_key_algorithm"`
 	PublicKeySize      int       `json:"public_key_size"`
+	RequestedServer    string    `json:"requested_server"`
 }
 
-func ConvertX509ToCertificate(from x509.Certificate) JSONCertificate {
+func ConvertX509ToCertificate(from x509.Certificate, requestedServer string) JSONCertificate {
 	var to JSONCertificate
 	to.SerialNumber = from.SerialNumber.String()
 	to.Subject.CommonName = from.Subject.CommonName
@@ -48,6 +49,7 @@ func ConvertX509ToCertificate(from x509.Certificate) JSONCertificate {
 	to.PublicKeyAlgorithm = from.PublicKeyAlgorithm.String()
 	keySize := getKeySize(from.PublicKey)
 	to.PublicKeySize = keySize
+	to.RequestedServer = requestedServer
 	return to
 }
 func getKeySize(pubKey interface{}) int {
