@@ -11,11 +11,11 @@ import (
 )
 
 const createCertificate = `-- name: CreateCertificate :one
-INSERT INTO certificate(
-                        user_email, subject_common_name, subject_organization, subject_organizational_unit, subject_country, subject_locality, subject_province,
-                        issuer_common_name, issuer_organization, issuer_organizational_unit, issuer_country, serial_number, not_before, not_after
-) VALUES ( ?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-RETURNING pk, sql_time_stamp, user_email, subject_common_name, subject_organization, subject_organizational_unit, subject_country, subject_locality, subject_province, issuer_common_name, issuer_organization, issuer_organizational_unit, issuer_country, serial_number, not_before, not_after
+INSERT INTO certificate(user_email, subject_common_name, subject_organization, subject_organizational_unit, subject_country, subject_locality,
+                        subject_province, issuer_common_name, issuer_organization, issuer_organizational_unit, issuer_country, serial_number,
+                        not_before, not_after, requested_server)
+VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+RETURNING pk, sql_time_stamp, user_email, subject_common_name, subject_organization, subject_organizational_unit, subject_country, subject_locality, subject_province, issuer_common_name, issuer_organization, issuer_organizational_unit, issuer_country, serial_number, not_before, not_after, requested_server
 `
 
 type CreateCertificateParams struct {
@@ -33,6 +33,7 @@ type CreateCertificateParams struct {
 	SerialNumber              sql.NullString
 	NotBefore                 sql.NullString
 	NotAfter                  sql.NullString
+	RequestedServer           interface{}
 }
 
 func (q *Queries) CreateCertificate(ctx context.Context, arg CreateCertificateParams) (Certificate, error) {
@@ -51,6 +52,7 @@ func (q *Queries) CreateCertificate(ctx context.Context, arg CreateCertificatePa
 		arg.SerialNumber,
 		arg.NotBefore,
 		arg.NotAfter,
+		arg.RequestedServer,
 	)
 	var i Certificate
 	err := row.Scan(
@@ -70,6 +72,7 @@ func (q *Queries) CreateCertificate(ctx context.Context, arg CreateCertificatePa
 		&i.SerialNumber,
 		&i.NotBefore,
 		&i.NotAfter,
+		&i.RequestedServer,
 	)
 	return i, err
 }
@@ -85,7 +88,7 @@ func (q *Queries) DeleteCertificate(ctx context.Context, pk int64) error {
 }
 
 const getCertificateFromPK = `-- name: GetCertificateFromPK :one
-SELECT pk, sql_time_stamp, user_email, subject_common_name, subject_organization, subject_organizational_unit, subject_country, subject_locality, subject_province, issuer_common_name, issuer_organization, issuer_organizational_unit, issuer_country, serial_number, not_before, not_after FROM certificate
+SELECT pk, sql_time_stamp, user_email, subject_common_name, subject_organization, subject_organizational_unit, subject_country, subject_locality, subject_province, issuer_common_name, issuer_organization, issuer_organizational_unit, issuer_country, serial_number, not_before, not_after, requested_server FROM certificate
 WHERE pk = ? LIMIT 1
 `
 
@@ -109,12 +112,13 @@ func (q *Queries) GetCertificateFromPK(ctx context.Context, pk int64) (Certifica
 		&i.SerialNumber,
 		&i.NotBefore,
 		&i.NotAfter,
+		&i.RequestedServer,
 	)
 	return i, err
 }
 
 const getCertificateFromSubjectCommonName = `-- name: GetCertificateFromSubjectCommonName :one
-SELECT pk, sql_time_stamp, user_email, subject_common_name, subject_organization, subject_organizational_unit, subject_country, subject_locality, subject_province, issuer_common_name, issuer_organization, issuer_organizational_unit, issuer_country, serial_number, not_before, not_after FROM certificate
+SELECT pk, sql_time_stamp, user_email, subject_common_name, subject_organization, subject_organizational_unit, subject_country, subject_locality, subject_province, issuer_common_name, issuer_organization, issuer_organizational_unit, issuer_country, serial_number, not_before, not_after, requested_server FROM certificate
 WHERE subject_common_name = ? LIMIT 1
 `
 
@@ -138,12 +142,13 @@ func (q *Queries) GetCertificateFromSubjectCommonName(ctx context.Context, subje
 		&i.SerialNumber,
 		&i.NotBefore,
 		&i.NotAfter,
+		&i.RequestedServer,
 	)
 	return i, err
 }
 
 const getCertificateFromSubjectCommonNameAndUserEmail = `-- name: GetCertificateFromSubjectCommonNameAndUserEmail :one
-SELECT pk, sql_time_stamp, user_email, subject_common_name, subject_organization, subject_organizational_unit, subject_country, subject_locality, subject_province, issuer_common_name, issuer_organization, issuer_organizational_unit, issuer_country, serial_number, not_before, not_after FROM certificate
+SELECT pk, sql_time_stamp, user_email, subject_common_name, subject_organization, subject_organizational_unit, subject_country, subject_locality, subject_province, issuer_common_name, issuer_organization, issuer_organizational_unit, issuer_country, serial_number, not_before, not_after, requested_server FROM certificate
 WHERE subject_common_name = ? AND user_email=? LIMIT 1
 `
 
@@ -172,12 +177,13 @@ func (q *Queries) GetCertificateFromSubjectCommonNameAndUserEmail(ctx context.Co
 		&i.SerialNumber,
 		&i.NotBefore,
 		&i.NotAfter,
+		&i.RequestedServer,
 	)
 	return i, err
 }
 
 const getCertificatesFromUserEmail = `-- name: GetCertificatesFromUserEmail :many
-SELECT pk, sql_time_stamp, user_email, subject_common_name, subject_organization, subject_organizational_unit, subject_country, subject_locality, subject_province, issuer_common_name, issuer_organization, issuer_organizational_unit, issuer_country, serial_number, not_before, not_after FROM certificate
+SELECT pk, sql_time_stamp, user_email, subject_common_name, subject_organization, subject_organizational_unit, subject_country, subject_locality, subject_province, issuer_common_name, issuer_organization, issuer_organizational_unit, issuer_country, serial_number, not_before, not_after, requested_server FROM certificate
 WHERE user_email=?
 ORDER BY sql_time_stamp
 `
@@ -208,6 +214,7 @@ func (q *Queries) GetCertificatesFromUserEmail(ctx context.Context, userEmail in
 			&i.SerialNumber,
 			&i.NotBefore,
 			&i.NotAfter,
+			&i.RequestedServer,
 		); err != nil {
 			return nil, err
 		}
@@ -223,7 +230,7 @@ func (q *Queries) GetCertificatesFromUserEmail(ctx context.Context, userEmail in
 }
 
 const listCertificates = `-- name: ListCertificates :many
-SELECT pk, sql_time_stamp, user_email, subject_common_name, subject_organization, subject_organizational_unit, subject_country, subject_locality, subject_province, issuer_common_name, issuer_organization, issuer_organizational_unit, issuer_country, serial_number, not_before, not_after FROM certificate
+SELECT pk, sql_time_stamp, user_email, subject_common_name, subject_organization, subject_organizational_unit, subject_country, subject_locality, subject_province, issuer_common_name, issuer_organization, issuer_organizational_unit, issuer_country, serial_number, not_before, not_after, requested_server FROM certificate
 ORDER BY subject_common_name
 `
 
@@ -253,6 +260,7 @@ func (q *Queries) ListCertificates(ctx context.Context) ([]Certificate, error) {
 			&i.SerialNumber,
 			&i.NotBefore,
 			&i.NotAfter,
+			&i.RequestedServer,
 		); err != nil {
 			return nil, err
 		}
@@ -268,7 +276,7 @@ func (q *Queries) ListCertificates(ctx context.Context) ([]Certificate, error) {
 }
 
 const listCertificatesByExpiration = `-- name: ListCertificatesByExpiration :many
-SELECT pk, sql_time_stamp, user_email, subject_common_name, subject_organization, subject_organizational_unit, subject_country, subject_locality, subject_province, issuer_common_name, issuer_organization, issuer_organizational_unit, issuer_country, serial_number, not_before, not_after FROM certificate
+SELECT pk, sql_time_stamp, user_email, subject_common_name, subject_organization, subject_organizational_unit, subject_country, subject_locality, subject_province, issuer_common_name, issuer_organization, issuer_organizational_unit, issuer_country, serial_number, not_before, not_after, requested_server FROM certificate
 ORDER BY not_after
 `
 
@@ -298,6 +306,7 @@ func (q *Queries) ListCertificatesByExpiration(ctx context.Context) ([]Certifica
 			&i.SerialNumber,
 			&i.NotBefore,
 			&i.NotAfter,
+			&i.RequestedServer,
 		); err != nil {
 			return nil, err
 		}
