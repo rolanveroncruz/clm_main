@@ -19,6 +19,9 @@ CREATE TABLE IF NOT EXISTS certificate(
     issuer_country text,
 
     serial_number text,
+    signature_algorithm text,
+    public_key_algorithm text,
+    public_key_size integer,
     not_before text,
     not_after text,
     requested_server text null, -- this is the name of the server requested.
