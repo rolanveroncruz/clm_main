@@ -23,6 +23,10 @@ type Certificate struct {
 	IssuerOrganizationalUnit  sql.NullString
 	IssuerCountry             sql.NullString
 	SerialNumber              sql.NullString
+	SignatureAlgorithm        sql.NullString
+	PublicKeyAlgorithm        sql.NullString
+	PublicKeySize             sql.NullInt64
 	NotBefore                 sql.NullString
 	NotAfter                  sql.NullString
+	RequestedServer           interface{}
 }
