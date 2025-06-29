@@ -47,4 +47,4 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJvbGFud
 
 ### Get Certs, might need to login for a fresh/valid Token.
 GET http://localhost:5001/api/get_certs HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJvbGFudmNAZ21haWwuY29tIiwiZXhwIjoxNzUwMzIwMzg2LCJuYW1lIjoiUm9sYW5WQyJ9._nWRdk3q5zlt0RpMcOyFaFTXRcd-dRTkVg-mbdiLezQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJvbGFudmNAZ21haWwuY29tIiwiZXhwIjoxNzUxMDkyMzMzLCJuYW1lIjoiUm9sYW5WQyJ9.et27swvHHDz5NDmOb5TG4pxQdyHbzt6zjXCoH95FqCs
